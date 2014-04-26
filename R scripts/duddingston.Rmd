@@ -49,19 +49,19 @@ knitr::opts_chunk$set(comment = NA, results = 'asis', tidy = F, message = F)
 
 ```{r echo = F, message = F, cache = F, include=FALSE}
 
-system("rm /home/tim/R/Communitymapping/orchards.geojson")
-system("rm /home/tim/R/Communitymapping/orchards3.shp")
-system("rm /home/tim/R/Communitymapping/orchards4.shp")
-system("rm /home/tim/R/Communitymapping/orchards6.geojson")
-system("wget -O /home/tim/R/Communitymapping/orchards.osm \"http://overpass-api.de/api/interpreter?data=way[%22landuse%22=%22orchard%22]%2855.30570111642547,-5.3887939453125,56.74669909639952,-2.49114990234375%29;out%20body;%3E;out%20skel;\"")
-system("ogr2ogr -f GeoJSON /home/tim/R/Communitymapping/orchards.geojson /home/tim/R/Communitymapping/orchards.osm multipolygons")
-json_orchards = '/home/tim/R/Communitymapping/orchards.geojson'
+system("rm /home/tim/github/localtivate/orchards.geojson")
+system("rm /home/tim/github/localtivate/orchards3.shp")
+system("rm /home/tim/github/localtivate/orchards4.shp")
+system("rm /home/tim/github/localtivate/orchards6.geojson")
+system("wget -O /home/tim/github/localtivate/orchards.osm \"http://overpass-api.de/api/interpreter?data=way[%22leisure%22=%22common%22]%2855.30570111642547,-5.3887939453125,56.74669909639952,-2.49114990234375%29;out%20body;%3E;out%20skel;\"")
+system("ogr2ogr -f GeoJSON /home/tim/R/github/localtivate/orchards.geojson /home/tim/R/Communitymapping/orchards.osm multipolygons")
+json_orchards = '/home/tim/R/github/localtivate/orchards.geojson'
 
 json_orchards <- fromJSON(paste(readLines(json_orchards), collapse=""))
 
-system("ogr2ogr -f \"ESRI Shapefile\" /home/tim/R/Communitymapping/orchards3.shp /home/tim/R/Communitymapping/orchards.osm multipolygons")
+system("ogr2ogr -f \"ESRI Shapefile\" /home/tim/R/github/localtivate/orchards3.shp /home/tim/github/localtivate//orchards.osm multipolygons")
 
-x <- readShapeSpatial("/home/tim/R/Communitymapping/orchards3.shp")
+x <- readShapeSpatial("/home/tim/github/localtivate/orchards3.shp")
 
 #auth = getGoogleAuth("macrofight@gmail.com","gladstone")
 #con = getGoogleDocsConnection(auth)
