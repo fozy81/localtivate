@@ -1,0 +1,136 @@
+
+```{r echo = F, message = F, cache = F, hide=T}
+{library(osmar) # loads osmar libarary which downloads data from openstreetmap as puts it into a dataframe
+library(rgeos) # geometry library get area in metres squared
+library(rgdal) # projection linrary to transform projection
+ library(rCharts) # 
+ library(rjson)
+ require(plyr)
+ library(RColorBrewer)
+ library(httr)
+ library(maptools)
+ require(RGoogleDocs)
+ library(devtools)
+# library(RJSONIO)
+library(RCurl)
+library(knitr) # create html webpage from this code
+ library(sp)# library for spatial analysis - can plot 'graphs'/maps of sp objects
+library(rgbif)
+ library(SortableHTMLTables)} 
+```
+
+Google spreadsheets + OpenStreetMap 
+========================================================
+
+Demo Page: Orchards in Central Scotland
+---------------------------------------------------
+
+<div class="custom-class" markdown="1" style="width:620px" align="justify" text-indent:50px;>
+<p>This page displays orchards mapped on <a href="http://www.openstreetmap.org/#map=11/55.8501/-4.1024" target="_blank">OpenStreetMap</a> in central Scotland. The highlighted orchards areas are supplemented with additional data entered on a Google spreadsheet. This test is to demostrate that temporal, subjective or private information can be linked to features added to OpenStreetMap. Small groups or organisations can use accessible tools such as google docs & openstreetmap to start creating a spatial dataset which can be easily updated. This technique is a light touch way to manage spatial assets using existing tools. In this instance, keeping track of orchard management/status and sharing that info with others.</p></div>
+
+  
+Central Scotland Orchards Map
+---------------------------------------------------
+* click on orchards to see popup displaying info from Google doc and openstreetmap
+
+
+
+```{r eval=F, hide=T, echo = F}
+rCharts::open_notebook()
+```
+
+```{r echo = F, message = F, cache = F}
+require(rCharts)
+options(RCHART_WIDTH = 600, RCHART_HEIGHT = 400)
+knitr::opts_chunk$set(comment = NA, results = 'asis', tidy = F, message = F)
+```
+
+<style>.rChart {width: 600px; height: 400px;}</style>
+
+```{r echo = F, message = F, cache = F, include=FALSE}
+
+system("rm /home/tim/R/Communitymapping/orchards.geojson")
+system("rm /home/tim/R/Communitymapping/orchards3.shp")
+system("rm /home/tim/R/Communitymapping/orchards4.shp")
+system("rm /home/tim/R/Communitymapping/orchards6.geojson")
+system("wget -O /home/tim/R/Communitymapping/orchards.osm \"http://overpass-api.de/api/interpreter?data=way[%22landuse%22=%22orchard%22]%2855.30570111642547,-5.3887939453125,56.74669909639952,-2.49114990234375%29;out%20body;%3E;out%20skel;\"")
+system("ogr2ogr -f GeoJSON /home/tim/R/Communitymapping/orchards.geojson /home/tim/R/Communitymapping/orchards.osm multipolygons")
+json_orchards = '/home/tim/R/Communitymapping/orchards.geojson'
+
+json_orchards <- fromJSON(paste(readLines(json_orchards), collapse=""))
+
+system("ogr2ogr -f \"ESRI Shapefile\" /home/tim/R/Communitymapping/orchards3.shp /home/tim/R/Communitymapping/orchards.osm multipolygons")
+
+x <- readShapeSpatial("/home/tim/R/Communitymapping/orchards3.shp")
+
+#auth = getGoogleAuth("macrofight@gmail.com","gladstone")
+#con = getGoogleDocsConnection(auth)
+
+sheets.con = getGoogleDocsConnection(getGoogleAuth("macrofight@gmail.com", "gladstone", service = "wise"))
+a = getDocs(sheets.con)
+o = getWorksheets("OrchardsTest", sheets.con)
+o2 = sheetAsMatrix(o$Sheet1, header = TRUE, as.data.frame = TRUE)
+
+merged <- merge(x=x@data, y=o2, by.x='name', by.y='name', all.x=TRUE)
+merged2 <- merged[,c("name","osm_way_id","landuse","other_tags","active management","number of trees","number of volunteers")]
+correct.ordering <- match(x@data$name, merged$name)
+x@data <- merged[correct.ordering, ]
+cbind(x@data$name, merged$name[correct.ordering])
+writeSpatialShape(x, fn="/home/tim/R/Communitymapping/orchards4")
+system("ogr2ogr -f GeoJSON /home/tim/R/Communitymapping/orchards6.geojson  /home/tim/R/Communitymapping/orchards4.shp")
+json_orchards2 = '/home/tim/R/Communitymapping/orchards6.geojson'
+json_orchards2 <- fromJSON(paste(readLines(json_orchards2), collapse=""))
+
+json_orchards2$features <- lapply(json_orchards2$features, function(properties){within(properties, {
+popup = iconv(whisker::whisker.render(
+ '<b> Name: {{properties.name}} </b><br>
+        <b>Other OpenStreetMap tags: </b> {{properties.other_tags}} <br>
+  <b>Number of volunteers: </b> {{properties.number_of_}} <br>
+  <b>Number of trees: </b> {{properties.number_of_2}} <br>
+ <b>Active management: </b> {{properties.active_man}} <br>'    
+), from = 'latin1', to = 'UTF-8')
+})
+})
+```
+
+```{r comment = NA, results = 'asis', tidy = F, message = F, echo=F}
+outmap3 <- Leaflet$new()
+outmap3$tileLayer(provider = 'Stamen.TonerLite')
+outmap3$setView(c(55.830,-4.249), zoom = 13)
+outmap3$geoJson(json_orchards2, 
+  onEachFeature = '#! function(feature, layer){
+    layer.bindPopup(feature.popup)
+  } !#')
+#out_map1$geoJson(geogovan)
+outmap3$enablePopover(TRUE)
+outmap3$print('char', include_assets=TRUE, cdn=TRUE)
+```
+
+<div class="custom-class" markdown="1" style="width:620px" align="justify"><p>Google spreadsheets can be private or public and equally the web map above could be used internally or externally depending
+on requirements of the organisation.</p></div>
+
+A demo Google spreadsheet has been created <a href="https://docs.google.com/spreadsheet/pub?key=0ArVD_Gwut6UBdEVwOVdXWDlQRXF1cm5vSF94MmN4ZGc&output=html" teargetr="_blank">here</a>
+
+<div class="custom-class" markdown="1" style="width:620px" align="justify"><p>The demo spreadsheet currently uses fictional values for demonstration purposes which are linked to real orchard data live from OpenStreetMap. The two datasets are currently linked via 'name' category but other links based on location or reference codes could be used.</p>
+
+<p>If data is updated on OpenStreetMap or on the Google document, this will be reflected on the map and table below. Currently the update
+is daily, but could be run almost realtime if moved to a dedicated computer or server.</p></div>
+
+Combined Table of values 
+---------------------------------------------------
+
+<div class="custom-class" markdown="1" style="width:620px" align="justify"><p>Table showing combined values from Google spreadsheet and openstreetmap</p></div>
+
+```{r echo = F, message = F, cache = F, include=FALSE}
+sortable.html.table(merged2, 'sample.html', '/home/tim/Dropbox/Public/Community mapping')
+```
+
+<iframe width="1200px" height="600px"" frameBorder='0' src="https://dl.dropboxusercontent.com/u/7033208/Community%20mapping/sample.html" allowfullscreen></iframe>
+
+
+Technical details 
+---------------------------------------------------
+
+<div class="custom-class" markdown="1" style="width:620px" align="justify"><p>This map and table are created using a 'R' software script. It requires about 100 lines of code to download, merge and display the dataset. Using this R code may be difficult for those unfamiliar with it but I will publish this code and I am also happy to help people use it and setup a basic site free of charge (resource depending and for a good cause!).</p></div>
+
+
