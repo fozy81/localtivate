@@ -22,7 +22,7 @@ system("rm /home/tim/github/localtivate/Rscripts/orchards.geojson")
 system("rm /home/tim/github/localtivate/Rscripts/orchards3.shp")
 system("rm /home/tim/github/localtivate/Rscripts/orchards4.shp")
 system("rm /home/tim/github/localtivate/Rscripts/orchards6.geojson")
-system("wget -O /home/tim/github/localtivate/Rscripts/orchards.osm \"http://overpass-api.de/api/interpreter?data=way[%22leisure%22=%22common%22]%2855.30570111642547,-5.3887939453125,56.74669909639952,-2.49114990234375%29;out%20body;%3E;out%20skel;\"")
+system("wget -O /home/tim/github/localtivate/Rscripts/orchards.osm \"http://overpass-api.de/api/interpreter?data=way[%22localtivate%22]%2855.30570111642547,-5.3887939453125,56.74669909639952,-2.49114990234375%29;out%20body;%3E;out%20skel;\"")
 system("ogr2ogr -f GeoJSON /home/tim/github/localtivate/Rscripts/orchards.geojson /home/tim/R/Communitymapping/orchards.osm multipolygons")
 json_orchards = '/home/tim/github/localtivate/Rscripts/orchards.geojson'
 
