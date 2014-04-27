@@ -2,19 +2,14 @@
 library(osmar) # loads osmar libarary which downloads data from openstreetmap as puts it into a dataframe
 library(rgeos) # geometry library get area in metres squared
 library(rgdal) # projection linrary to transform projection
- library(rCharts) # 
  library(rjson)
  require(plyr)
  library(RColorBrewer)
  library(httr)
  library(maptools)
- require(RGoogleDocs)
- library(devtools)
 library(RCurl)
-library(knitr) # create html webpage from this code
  library(sp)# library for spatial analysis - can plot 'graphs'/maps of sp objects
 library(rgbif)
- library(SortableHTMLTables)
 
 
 
@@ -24,6 +19,8 @@ system("rm /home/tim/github/localtivate/Rscripts/localtivate_survey.shp")
 system("rm /home/tim/github/localtivate/Rscripts/localtivate_survey.geojson")
 system("wget -O /home/tim/github/localtivate/Rscripts/localtivate.osm \"http://overpass-api.de/api/interpreter?data=way[%22localtivate%22]%2855.30570111642547,-5.3887939453125,56.74669909639952,-2.49114990234375%29;out%20body;%3E;out%20skel;\"")
 system("ogr2ogr -f GeoJSON /home/tim/github/localtivate/Rscripts/localtivate.geojson /home/tim/github/localtivate/Rscripts/localtivate.osm multipolygons")
+
+
 json_orchards = '/home/tim/github/localtivate/Rscripts/localtivate.geojson'
 
 json_orchards <- fromJSON(paste(readLines(json_orchards), collapse=""))
@@ -46,7 +43,6 @@ cbind(x@data$localtivat, merged2$name[correct.ordering])
 writeSpatialShape(x, fn="/home/tim/github/localtivate/Rscripts/localtivate_survey")
  writeOGR(x, 'localtivate_survey.geojson','localtivate_survey', driver='GeoJSON')
 
-system("ogr2ogr -f GeoJSON /home/tim/github/localtivate/Rscripts/localtivate_survey.geojson  /home/tim/github/localtivate/Rscripts/localtivate_survey.shp")
 
 # json_orchards2 = '/home/tim/github/localtivate/Rscripts/localtivate_survey.geojson'
 
