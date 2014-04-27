@@ -32,8 +32,14 @@ system("ogr2ogr -f \"ESRI Shapefile\" /home/tim/github/localtivate/Rscripts/loca
 
 x <- readShapeSpatial("/home/tim/github/localtivate/Rscripts/localtivate.shp")
 
-survey <- read.csv("duddingston_survey.csv")
-survey$name <- o2$Unique.reference.number...your.initials.and.a.number.
+survey <- read.csv("duddingston_survey.csv", check.names= FALSE)
+
+survey$name <- survey$'Unique reference number  (your initials and a number)'
+
+merged <- merge(x=x@data, y=survey, by.x='localtivat', by.y='name', all.x=TRUE)
+merged2 <- merged[,c("localtivat","osm_way_id","leisure", "Location of the space", "Which of the following categories best describes the space?", "What natural features are present?","What man-made features are present?","Terrain","Exposure and Orientation", "Current uses","Does this space have an official name? How do local people usually refer to it?", "Accessibility","History and prior uses of site","Comments and Extras", "Unique reference number  (your initials and a number)", "Potential future uses")]
+  
+  survey$name <- o2$Unique.reference.number...your.initials.and.a.number.
 
 merged <- merge(x=x@data, y=survey, by.x='localtivat', by.y='name', all.x=TRUE)
 merged2 <- merged[,c("localtivat","osm_way_id","leisure","Location.of.the.space","Which.of.the.following.categories.best.describes.the.space.","What.natural.features.are.present.","What.man.made.features.are.present.","Terrain","Exposure.and.Orientation","Current.uses","Does.this.space.have.an.official.name..How.do.local.people.usually.refer.to.it.","Accessibility","History.and.prior.uses.of.site","Comments.and.Extras","Unique.reference.number...your.initials.and.a.number.","Potential.future.uses")]
