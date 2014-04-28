@@ -2,14 +2,20 @@ library(shiny)
 library(RCurl)
 require(rCharts)
 library(reshape)
+library(leaflet)
 
 d <- read.csv("duddingston_survey.csv")
 djson <- toJSONArray2(d, json = F)
 
 
 
+shinyServer(function(input, output, session) {
+  
+  # Create the map 
+map <- createLeafletMap(session, "map")
 
-shinyServer(function(input, output) {
+
+
   
   mapLatLon <- reactive({
     eval(parse(text=paste("d[d$Site == \"", input$dataset, "\", 10:11]",sep="")))
@@ -42,13 +48,7 @@ shinyServer(function(input, output) {
   })
   
   
-  output$chart <- renderChart({
-    d <- d[d$LevelFormatted > "0",1:14] # removes '0' level incidents
-    d$Year <- as.numeric(d$Year)
-    n1 <- nPlot(LevelFormatted ~ Year, group = 'Location', data = d, type = "multiBarChart")
-    n1$addParams(dom = 'chart')
-    return(n1)
-  })
+
   
   
   

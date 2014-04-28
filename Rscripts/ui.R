@@ -1,4 +1,6 @@
 
+d <- read.csv("duddingston_survey.csv")
+
 shinyUI(pageWithSidebar(
   
   # Application title
@@ -8,21 +10,24 @@ shinyUI(pageWithSidebar(
   # of observations to view
   sidebarPanel(
     selectInput("dataset", "Choose a site:", 
-                sort(paste(unique(sort(d$Site))))), 
-    ### add map here
-    tags$style('.leaflet {height: 250px;}'),
-    tags$style('.leaflet {layerOpts: {
-               attribution: "Map data from<a href=\"http://openstreetmap.org\">OpenStreetMap</a>\n         contributors, Imagery<a href=\"http://mapbox.com\">MapBox</a>" 
-               ;},')),
+                sort(paste(unique(sort(d$Location.of.the.space))))) 
+  ),
+
   #  showOutput('myMap', 'leaflet')),
   
   mainPanel(
     tabsetPanel(
-      tabPanel("Site Results"),
-      tabPanel(showOutput("chart", "nvd3"))
-      #, h3(textOutput("caption")), plotOutput("view"),dataTableOutput("summary")),
-      #tabPanel("All Results", dataTableOutput("allresults")
+      tabPanel("Map"),
+      tabPanel( leafletMap("map", width="100%", height="100%",
+                           initialTileLayer = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
+                           initialTileLayerAttribution = HTML('Map data from<a href=\"http://openstreetmap.org\">OpenStreetMap</a>\n contributors, Maps by <a href="http://www.mapbox.com/">Mapbox</a>'),
+                           options=list(
+                             center = c(37.45, -93.85),
+                             zoom = 4,
+                             maxBounds = list(list(15.961329,-129.92981), list(52.908902,-56.80481)) 
     )
   )
-  
-    ))
+      )
+  )
+  )
+))
