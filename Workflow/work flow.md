@@ -14,7 +14,7 @@
 
 ![sheet](https://raw.githubusercontent.com/fozy81/localtivate/master/Workflow/Google%20spreadsheet.png)
 
-### 4. The forms corresponding to features in OpenStreetMap are linked by tag added in OpenStreetMap 'localtivate=' followed by a number. In future, we will just use the OpenStreetMap ID of the feature. All features in OpenStreetMap have a unique ID e.g. http://www.openstreetmap.org/way/270103227
+### 4. The forms corresponding to features in OpenStreetMap are linked by tag added in OpenStreetMap 'localtivate=' followed by a number. In future, we will just use the OpenStreetMap ID of the feature. All features in OpenStreetMap have a unique ID e.g. http://www.openstreetmap.org/way/270103227. A request is sent to the Overpass API with the IDs and this returns the features required e.g. http://overpass-turbo.eu/s/1N7
 
 ### 5. The OSM feature and google survey information are combined based on the OSM ID. This is done using an code script. The script merges details about the outline of the feature with the google form details
 
