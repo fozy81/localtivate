@@ -10,7 +10,7 @@
 
 ![OpenStreetMap editor](https://raw.githubusercontent.com/fozy81/localtivate/master/Workflow/ID%20editor.png)
 
-### 3. Data from google form is automatically transferred in to google spreadsheet
+### 3. Data from google form is automatically transferred into google spreadsheet
 
 ![sheet](https://raw.githubusercontent.com/fozy81/localtivate/master/Workflow/Google%20spreadsheet.png)
 
